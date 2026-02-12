@@ -41,6 +41,22 @@ public object YogaNative {
 
   @JvmStatic public external fun jni_YGConfigSetLoggerJNI(nativePointer: Long, logger: YogaLogger?)
 
+  @JvmStatic
+  public external fun jni_YGConfigSetViewportWidthJNI(
+      nativePointer: Long,
+      viewportWidth: Float,
+  )
+
+  @JvmStatic public external fun jni_YGConfigGetViewportWidthJNI(nativePointer: Long): Float
+
+  @JvmStatic
+  public external fun jni_YGConfigSetViewportHeightJNI(
+      nativePointer: Long,
+      viewportHeight: Float,
+  )
+
+  @JvmStatic public external fun jni_YGConfigGetViewportHeightJNI(nativePointer: Long): Float
+
   // YGNode related
   @JvmStatic public external fun jni_YGNodeNewJNI(): Long
 

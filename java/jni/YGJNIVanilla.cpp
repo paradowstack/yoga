@@ -94,6 +94,40 @@ static jint jni_YGConfigGetErrataJNI(
   return static_cast<jint>(YGConfigGetErrata(config));
 }
 
+static void jni_YGConfigSetViewportWidthJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer,
+    jfloat viewportWidth) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetViewportWidth(config, viewportWidth);
+}
+
+static jfloat jni_YGConfigGetViewportWidthJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  return YGConfigGetViewportWidth(config);
+}
+
+static void jni_YGConfigSetViewportHeightJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer,
+    jfloat viewportHeight) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  YGConfigSetViewportHeight(config, viewportHeight);
+}
+
+static jfloat jni_YGConfigGetViewportHeightJNI(
+    JNIEnv* /*env*/,
+    jobject /*obj*/,
+    jlong nativePointer) {
+  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
+  return YGConfigGetViewportHeight(config);
+}
+
 static jlong jni_YGNodeNewJNI(JNIEnv* /*env*/, jobject /*obj*/) {
   const YGNodeRef node = YGNodeNew();
   YGNodeSetContext(node, YGNodeContext{}.asVoidPtr);
@@ -776,6 +810,18 @@ static JNINativeMethod methods[] = {
      (void*)jni_YGConfigSetPointScaleFactorJNI},
     {"jni_YGConfigSetErrataJNI", "(JI)V", (void*)jni_YGConfigSetErrataJNI},
     {"jni_YGConfigGetErrataJNI", "(J)I", (void*)jni_YGConfigGetErrataJNI},
+    {"jni_YGConfigSetViewportWidthJNI",
+     "(JF)V",
+     (void*)jni_YGConfigSetViewportWidthJNI},
+    {"jni_YGConfigGetViewportWidthJNI",
+     "(J)F",
+     (void*)jni_YGConfigGetViewportWidthJNI},
+    {"jni_YGConfigSetViewportHeightJNI",
+     "(JF)V",
+     (void*)jni_YGConfigSetViewportHeightJNI},
+    {"jni_YGConfigGetViewportHeightJNI",
+     "(J)F",
+     (void*)jni_YGConfigGetViewportHeightJNI},
     {"jni_YGConfigSetLoggerJNI",
      "(JLcom/facebook/yoga/YogaLogger;)V",
      (void*)jni_YGConfigSetLoggerJNI},

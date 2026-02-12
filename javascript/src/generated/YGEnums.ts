@@ -128,6 +128,7 @@ export enum Unit {
   MaxContent = 4,
   FitContent = 5,
   Stretch = 6,
+  Calc = 7,
 }
 
 export enum Wrap {
@@ -209,6 +210,7 @@ const constants = {
   UNIT_MAX_CONTENT: Unit.MaxContent,
   UNIT_FIT_CONTENT: Unit.FitContent,
   UNIT_STRETCH: Unit.Stretch,
+  UNIT_CALC: Unit.Calc,
   WRAP_NO_WRAP: Wrap.NoWrap,
   WRAP_WRAP: Wrap.Wrap,
   WRAP_WRAP_REVERSE: Wrap.WrapReverse,

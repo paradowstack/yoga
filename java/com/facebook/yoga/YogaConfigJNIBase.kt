@@ -60,5 +60,19 @@ private constructor(@JvmField protected var nativePointer: Long) : YogaConfig() 
 
   public override fun getLogger(): YogaLogger? = _logger
 
+  public override fun setViewportWidth(viewportWidth: Float) {
+    YogaNative.jni_YGConfigSetViewportWidthJNI(nativePointer, viewportWidth)
+  }
+
+  public override fun getViewportWidth(): Float =
+      YogaNative.jni_YGConfigGetViewportWidthJNI(nativePointer)
+
+  public override fun setViewportHeight(viewportHeight: Float) {
+    YogaNative.jni_YGConfigSetViewportHeightJNI(nativePointer, viewportHeight)
+  }
+
+  public override fun getViewportHeight(): Float =
+      YogaNative.jni_YGConfigGetViewportHeightJNI(nativePointer)
+
   public override fun getNativePointer(): Long = nativePointer
 }

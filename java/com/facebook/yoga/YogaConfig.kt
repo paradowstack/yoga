@@ -25,6 +25,14 @@ public abstract class YogaConfig {
 
   public abstract fun getLogger(): YogaLogger?
 
+  public abstract fun setViewportWidth(viewportWidth: Float)
+
+  public abstract fun getViewportWidth(): Float
+
+  public abstract fun setViewportHeight(viewportHeight: Float)
+
+  public abstract fun getViewportHeight(): Float
+
   protected abstract fun getNativePointer(): Long
 
   public companion object {

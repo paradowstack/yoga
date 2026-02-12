@@ -34,9 +34,16 @@ static void appendYGValueIfNotDefault(
       j[key] = "auto";
     } else if (value.unit == YGUnitUndefined) {
       j[key] = "undefined";
+    } else if (value.unit == YGUnitCalc) {
+      j[key]["value"] = {
+          {"px", value.value.calc.px},
+          {"percent", value.value.calc.percent},
+          {"vw", value.value.calc.vw},
+          {"vh", value.value.calc.vh}};
+      j[key]["unit"] = "calc";
     } else {
       std::string unit = value.unit == YGUnitPoint ? "px" : "pct";
-      j[key]["value"] = value.value;
+      j[key]["value"] = value.value.scalar;
       j[key]["unit"] = unit;
     }
   }
@@ -115,12 +122,6 @@ static void appendEdges(
       (*Field)(defaultNode, YGEdgeHorizontal));
 }
 
-static YGValue borderFloatToYGValue(YGNodeRef node, YGEdge edge) {
-  float val = YGNodeStyleGetBorder(node, edge);
-  YGUnit unit = YGFloatIsUndefined(val) ? YGUnitUndefined : YGUnitPoint;
-  return YGValue{val, unit};
-}
-
 static void serializeMeasureFuncResults(
     json& j,
     std::vector<SerializedMeasureFunc>& measureFuncs) {
@@ -141,14 +142,31 @@ static void serializeTreeImpl(
     SerializedMeasureFuncMap& nodesToMeasureFuncs,
     YGNodeRef node,
     PrintOptions options) {
-  if ((options & PrintOptions::Layout) == PrintOptions::Layout) {
-    j["layout"]["width"] = YGNodeStyleGetWidth(node).value;
-    j["layout"]["height"] = YGNodeStyleGetHeight(node).value;
-    j["layout"]["top"] = YGNodeStyleGetPosition(node, YGEdgeTop).value;
-    j["layout"]["left"] = YGNodeStyleGetPosition(node, YGEdgeLeft).value;
-  }
   std::unique_ptr<YGNode, decltype(&YGNodeFree)> defaultNode(
       YGNodeNew(), YGNodeFree);
+
+  if ((options & PrintOptions::Layout) == PrintOptions::Layout) {
+    appendYGValueIfNotDefault(
+        j["layout"],
+        "width",
+        YGNodeStyleGetWidth(node),
+        YGNodeStyleGetWidth(YGNodeNew()));
+    appendYGValueIfNotDefault(
+        j["layout"],
+        "height",
+        YGNodeStyleGetHeight(node),
+        YGNodeStyleGetHeight(YGNodeNew()));
+    appendYGValueIfNotDefault(
+        j["layout"],
+        "top",
+        YGNodeStyleGetPosition(node, YGEdgeTop),
+        YGNodeStyleGetPosition(YGNodeNew(), YGEdgeTop));
+    appendYGValueIfNotDefault(
+        j["layout"],
+        "left",
+        YGNodeStyleGetPosition(node, YGEdgeLeft),
+        YGNodeStyleGetPosition(YGNodeNew(), YGEdgeLeft));
+  }
 
   if ((options & PrintOptions::Style) == PrintOptions::Style) {
     appendEnumValueIfNotDefault(
@@ -221,7 +239,7 @@ static void serializeTreeImpl(
 
     appendEdges<&YGNodeStyleGetMargin>(j, "margin", node, defaultNode.get());
     appendEdges<&YGNodeStyleGetPadding>(j, "padding", node, defaultNode.get());
-    appendEdges<&borderFloatToYGValue>(j, "border", node, defaultNode.get());
+    appendEdges<&YGNodeStyleGetBorder>(j, "border", node, defaultNode.get());
     appendEdges<&YGNodeStyleGetPosition>(
         j, "position", node, defaultNode.get());
 

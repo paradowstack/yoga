@@ -1,0 +1,82 @@
+{
+  "profile-ios": {
+    "tree creation": {
+      "average": 1.451063,
+      "min": 1.388542,
+      "max": 1.602459,
+      "runs": 10
+    },
+    "layout": {
+      "average": 0.317562,
+      "min": 0.289209,
+      "max": 0.362916,
+      "runs": 10
+    },
+    "total": {
+      "average": 1.767196,
+      "min": 1.696375,
+      "max": 1.952833,
+      "runs": 10
+    }
+  },
+  "chat-mac": {
+    "tree creation": {
+      "average": 42.241104,
+      "min": 41.462542,
+      "max": 42.756458,
+      "runs": 10
+    },
+    "layout": {
+      "average": 6.570283,
+      "min": 6.454917,
+      "max": 6.645125,
+      "runs": 10
+    },
+    "total": {
+      "average": 48.840221,
+      "min": 48.050708,
+      "max": 49.422417,
+      "runs": 10
+    }
+  },
+  "rendering-sample-mac": {
+    "tree creation": {
+      "average": 0.870258,
+      "min": 0.816667,
+      "max": 0.955917,
+      "runs": 10
+    },
+    "layout": {
+      "average": 1.104488,
+      "min": 1.054291,
+      "max": 1.129625,
+      "runs": 10
+    },
+    "total": {
+      "average": 1.973808,
+      "min": 1.87925,
+      "max": 2.089625,
+      "runs": 10
+    }
+  },
+  "feed-android": {
+    "tree creation": {
+      "average": 12.324283,
+      "min": 12.082125,
+      "max": 12.527083,
+      "runs": 10
+    },
+    "layout": {
+      "average": 4.188675,
+      "min": 4.138166,
+      "max": 4.239583,
+      "runs": 10
+    },
+    "total": {
+      "average": 16.506004,
+      "min": 16.291666,
+      "max": 16.681416,
+      "runs": 10
+    }
+  }
+}

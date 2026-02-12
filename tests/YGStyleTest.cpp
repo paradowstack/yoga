@@ -29,7 +29,7 @@ TEST(YogaTest, copy_style_modified) {
 
   YGNodeCopyStyle(node0, node1);
   ASSERT_EQ(YGFlexDirectionRow, YGNodeStyleGetFlexDirection(node0));
-  ASSERT_FLOAT_EQ(10, YGNodeStyleGetMaxHeight(node0).value);
+  ASSERT_FLOAT_EQ(10, YGNodeStyleGetMaxHeight(node0).value.scalar);
 
   YGNodeFree(node0);
   YGNodeFree(node1);

@@ -67,3 +67,140 @@ void ConfigCloningTest::TearDown() {
 }
 
 yoga::Node ConfigCloningTest::clonedNode = {};
+
+TEST(YGConfigTest, default_viewport_dimensions) {
+  const YGConfigRef config = YGConfigNew();
+  EXPECT_EQ(YGConfigGetViewportWidth(config), 0.0f);
+  EXPECT_EQ(YGConfigGetViewportHeight(config), 0.0f);
+  YGConfigFree(config);
+}
+
+TEST(YGConfigTest, set_viewport_dimensions) {
+  const YGConfigRef config = YGConfigNew();
+  YGConfigSetViewportWidth(config, 1920.0f);
+  YGConfigSetViewportHeight(config, 1080.0f);
+
+  EXPECT_EQ(YGConfigGetViewportWidth(config), 1920.0f);
+  EXPECT_EQ(YGConfigGetViewportHeight(config), 1080.0f);
+  YGConfigFree(config);
+}
+
+TEST(YGConfigTest, update_viewport_dimensions) {
+  const YGConfigRef config = YGConfigNew();
+  YGConfigSetViewportWidth(config, 1920.0f);
+  YGConfigSetViewportHeight(config, 1080.0f);
+
+  YGConfigSetViewportWidth(config, 1000.0f);
+  YGConfigSetViewportHeight(config, 800.0f);
+
+  EXPECT_EQ(YGConfigGetViewportWidth(config), 1000.0f);
+  EXPECT_EQ(YGConfigGetViewportHeight(config), 800.0f);
+  YGConfigFree(config);
+}
+
+TEST(YGConfigTest, calc_width_height_layout) {
+  const YGConfigRef config = YGConfigNew();
+
+  const YGNodeRef root = YGNodeNewWithConfig(config);
+  YGNodeStyleSetPositionType(root, YGPositionTypeAbsolute);
+  // width: calc(50px + 50%)  with parent width 200 => 50 + 100 = 150
+  YGNodeStyleSetWidthCalc(root, {50.0f, 50.0f, 0.0f, 0.0f});
+  YGNodeStyleSetHeight(root, 100);
+
+  YGNodeRef child = YGNodeNewWithConfig(config);
+  // height: calc(10px + 25%) with parent height 100 => 10 + 25 = 35
+  YGNodeStyleSetWidth(child, 50);
+  YGNodeStyleSetHeightCalc(child, {10.0f, 25.0f, 0.0f, 0.0f});
+  YGNodeInsertChild(root, child, 0);
+
+  YGNodeCalculateLayout(root, 200, YGUndefined, YGDirectionLTR);
+
+  ASSERT_FLOAT_EQ(150, YGNodeLayoutGetWidth(root));
+  ASSERT_FLOAT_EQ(100, YGNodeLayoutGetHeight(root));
+  ASSERT_FLOAT_EQ(50, YGNodeLayoutGetWidth(child));
+  ASSERT_FLOAT_EQ(35, YGNodeLayoutGetHeight(child));
+
+  YGNodeFreeRecursive(root);
+  YGConfigFree(config);
+}
+
+TEST(YGConfigTest, calc_padding_layout) {
+  const YGConfigRef config = YGConfigNew();
+
+  const YGNodeRef root = YGNodeNewWithConfig(config);
+  YGNodeStyleSetPositionType(root, YGPositionTypeAbsolute);
+  YGNodeStyleSetWidth(root, 200);
+  YGNodeStyleSetHeight(root, 200);
+
+  YGNodeRef child = YGNodeNewWithConfig(config);
+  YGNodeStyleSetWidth(child, 200);
+  YGNodeStyleSetHeight(child, 200);
+  // padding-left: calc(10px + 5%) => 10 + (5% of 200) = 10 + 10 = 20
+  YGNodeStyleSetPaddingCalc(child, YGEdgeLeft, {10.0f, 5.0f, 0.0f, 0.0f});
+  YGNodeInsertChild(root, child, 0);
+
+  YGNodeRef grandchild = YGNodeNewWithConfig(config);
+  YGNodeStyleSetWidth(grandchild, 50);
+  YGNodeStyleSetHeight(grandchild, 50);
+  YGNodeInsertChild(child, grandchild, 0);
+
+  YGNodeCalculateLayout(root, YGUndefined, YGUndefined, YGDirectionLTR);
+
+  ASSERT_FLOAT_EQ(20, YGNodeLayoutGetLeft(grandchild));
+
+  YGNodeFreeRecursive(root);
+  YGConfigFree(config);
+}
+
+TEST(YGConfigTest, calc_gap_layout) {
+  const YGConfigRef config = YGConfigNew();
+
+  const YGNodeRef root = YGNodeNewWithConfig(config);
+  YGNodeStyleSetFlexDirection(root, YGFlexDirectionRow);
+  YGNodeStyleSetPositionType(root, YGPositionTypeAbsolute);
+  YGNodeStyleSetWidth(root, 200);
+  YGNodeStyleSetHeight(root, 100);
+  // column-gap: calc(10px + 5%) => 10 + 10 = 20
+  YGNodeStyleSetGapCalc(root, YGGutterColumn, {10.0f, 5.0f, 0.0f, 0.0f});
+
+  YGNodeRef child0 = YGNodeNewWithConfig(config);
+  YGNodeStyleSetWidth(child0, 50);
+  YGNodeStyleSetHeight(child0, 50);
+  YGNodeInsertChild(root, child0, 0);
+
+  YGNodeRef child1 = YGNodeNewWithConfig(config);
+  YGNodeStyleSetWidth(child1, 50);
+  YGNodeStyleSetHeight(child1, 50);
+  YGNodeInsertChild(root, child1, 1);
+
+  YGNodeCalculateLayout(root, YGUndefined, YGUndefined, YGDirectionLTR);
+
+  ASSERT_FLOAT_EQ(0, YGNodeLayoutGetLeft(child0));
+  ASSERT_FLOAT_EQ(70, YGNodeLayoutGetLeft(child1));
+
+  YGNodeFreeRecursive(root);
+  YGConfigFree(config);
+}
+
+TEST(YGConfigTest, calc_margin_layout) {
+  const YGConfigRef config = YGConfigNew();
+
+  const YGNodeRef root = YGNodeNewWithConfig(config);
+  YGNodeStyleSetPositionType(root, YGPositionTypeAbsolute);
+  YGNodeStyleSetWidth(root, 200);
+  YGNodeStyleSetHeight(root, 200);
+
+  YGNodeRef child = YGNodeNewWithConfig(config);
+  YGNodeStyleSetWidth(child, 50);
+  YGNodeStyleSetHeight(child, 50);
+  // margin-top: calc(20px + 10%) => 20 + 20 = 40
+  YGNodeStyleSetMarginCalc(child, YGEdgeTop, {20.0f, 10.0f, 0.0f, 0.0f});
+  YGNodeInsertChild(root, child, 0);
+
+  YGNodeCalculateLayout(root, YGUndefined, YGUndefined, YGDirectionLTR);
+
+  ASSERT_FLOAT_EQ(40, YGNodeLayoutGetTop(child));
+
+  YGNodeFreeRecursive(root);
+  YGConfigFree(config);
+}

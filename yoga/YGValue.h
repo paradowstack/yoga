@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 
+#include <yoga/YGCalc.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGMacros.h>
 
@@ -27,9 +28,16 @@ YG_EXTERN_C_BEGIN
 
 /**
  * Structure used to represent a dimension in a style.
+ *
+ * BREAKING CHANGE: `value` is now a tagged union. For Point/Percent units use
+ * `value.scalar`; for Calc units use `value.calc`. Previously this was a plain
+ * float field.
  */
 typedef struct YGValue {
-  float value;
+  union Value {
+    float scalar;
+    YGCalc calc;
+  } value;
   YGUnit unit;
 } YGValue;
 
@@ -71,7 +79,12 @@ inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
       return true;
     case YGUnitPoint:
     case YGUnitPercent:
-      return lhs.value == rhs.value;
+      return lhs.value.scalar == rhs.value.scalar;
+    case YGUnitCalc:
+      return lhs.value.calc.px == rhs.value.calc.px &&
+          lhs.value.calc.percent == rhs.value.calc.percent &&
+          lhs.value.calc.vw == rhs.value.calc.vw &&
+          lhs.value.calc.vh == rhs.value.calc.vh;
     default:
       return false;
   }
@@ -82,6 +95,17 @@ inline bool operator!=(const YGValue& lhs, const YGValue& rhs) {
 }
 
 inline YGValue operator-(const YGValue& value) {
-  return {-value.value, value.unit};
+  if (value.unit == YGUnitCalc) {
+    return {
+        .value =
+            {.calc =
+                 {-value.value.calc.px,
+                  -value.value.calc.percent,
+                  -value.value.calc.vw,
+                  -value.value.calc.vh}},
+        .unit = YGUnitCalc};
+  }
+  return {.value = {.scalar = -value.value.scalar}, .unit = value.unit};
 }
+
 #endif
